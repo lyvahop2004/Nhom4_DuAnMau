@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/91ad5c6d6a.js" crossorigin="anonymous"></script>
     <title>Document</title>
-    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="./css/login.css">
 </head>
 <body>
-<form class="form_container">
+<form class="form_container" action="sign_up.php" method="POST">
   <div class="logo_container"> <img src="./image/logoh2t.png"></div>
   <div class="title_container">
     <p class="title">Sign up a new Account</p>
@@ -18,27 +19,27 @@
   <div class="input_container">
     <label class="input_label" for="email_field">Tên đăng nhập</label>
 
-    <input placeholder="Your username " title="Inpit title" name="input-name" type="text" class="input_field" id="email_field" name="email">
+    <input placeholder="Your username " title="Inpit title" name="username" type="text" class="input_field" id="email_field" >
   </div>
 
   <div class="input_container">
     <label class="input_label" for="email_field">Email</label>
 
-    <input placeholder="name@mail.com" title="Inpit title" name="input-name" type="text" class="input_field" id="email_field" name="email">
+    <input placeholder="name@mail.com" title="Inpit title" name="email" type="text" class="input_field" id="email_field">
   </div>
   <div class="input_container">
     <label class="input_label" for="password_field">Mật khẩu</label>
     
-    <input placeholder="Password" title="Inpit title" name="input-name" type="password" class="input_field" id="password_field"name="password">
+    <input placeholder="Password" title="Inpit title" name="password" type="password" class="input_field" id="password_field">
   </div>
 
   <div class="input_container">
     <label class="input_label" for="password_field">Xác nhận mật khẩu</label>
     
-    <input placeholder="Password check" title="Inpit title" name="input-name" type="password" class="input_field" id="password_field"name="password">
+    <input placeholder="Password check" title="Inpit title" name="password2" type="password" class="input_field" id="password_field">
   </div>
 
-  <button title="Sign In" type="submit" class="sign-in_btn" name="button">
+  <button title="Sign In" type="submit" class="sign-in_btn" name="dangki">
     <span>Sign In</span>
   </button>
 
@@ -77,4 +78,77 @@
 
 </form>
 </body>
+
 </html>
+
+<?php
+    include('connect.php');
+
+    //Lấy dữ liệu từ file dangky.php
+    if (isset($_POST['username']) && isset($_POST['password']) && isset($_POST['email'])){
+        $username   = $_POST['username'];
+        $password   = $_POST['password'];
+        $email      = $_POST['email'];
+
+        //Kiểm tra người dùng đã nhập liệu đầy đủ chưa
+    if (!$username || !$password || !$email )
+    {
+        echo "Vui lòng nhập đầy đủ thông tin. <a href='javascript: history.go(-1)'>Trở lại</a>";
+        exit;
+    }
+
+    // Mã khóa mật khẩu
+    $pass = password_hash($password,PASSWORD_DEFAULT);
+
+    //Check username đã có người dùng hay chưa
+    $queryUsername = ("SELECT username FROM users WHERE username='$username'");
+    $query1 = mysqli_query($mysqli,$queryUsername); //ham nay chua 2 bien 1 bien ket noi va 1 bien chua cau truy van
+
+    if (mysqli_num_rows($query1) > 0)
+    {
+        echo "Tên đăng nhập này đã có người dùng. Vui lòng chọn tên đăng nhập khác. <a href='javascript: history.go(-1)'>Trở lại</a>";
+        exit;
+    }
+
+    //Kiểm tra email có đúng định dạng hay không
+    if (!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+\.[A-Za-z]{2,6}$/", $email))
+    {
+        echo "Email này không hợp lệ. Vui long nhập email khác. <a href='javascript: history.go(-1)'>Trở lại</a>";
+        exit;
+    }
+
+    //Kiểm tra email đã có người dùng chưa
+    $queryEmail = ("SELECT email FROM users WHERE email='$email'");
+    $query2 = mysqli_query($mysqli,$queryEmail);
+    if (mysqli_num_rows($query2) > 0)
+    {
+        echo "Email này đã có người dùng. Vui lòng chọn Email khác. <a href='javascript: history.go(-1)'>Trở lại</a>";
+        exit;
+    }
+
+        //Lưu thông tin thành viên vào bảng
+        $queryThongTin = ("
+        INSERT INTO users (
+            username,
+            password,
+            email
+        )
+        VALUE (
+            '{$username}',
+            '{$pass}',
+            '{$email}'
+        )
+    ");
+    $addUser = mysqli_query($mysqli,$queryThongTin);
+                          
+    //Thông báo quá trình lưu
+    if ($addUser){
+        header('location:./login.php');
+    }
+        
+    else{
+        echo "Có lỗi xảy ra trong quá trình đăng ký. <a href='sign_up.php'>Thử lại</a>";
+    }
+        
+} 
+?>
