@@ -1,13 +1,12 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://kit.fontawesome.com/91ad5c6d6a.js" crossorigin="anonymous"></script>
-    <title>Document</title>
-    <link rel="stylesheet" href="./css/login.css">
-</head>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="https://kit.fontawesome.com/91ad5c6d6a.js" crossorigin="anonymous"></script>
+        <title>Document</title>
+        <link rel="stylesheet" href="./css/login.css">
+
+    </head>
 <body>
 <form class="form_container" action="sign_up.php" method="POST">
   <div class="logo_container"> <img src="./image/logoh2t.png"></div>
@@ -78,25 +77,28 @@
 
 </form>
 </body>
-
 </html>
-
 <?php
     include('connect.php');
 
     //Lấy dữ liệu từ file dangky.php
-    if (isset($_POST['username']) && isset($_POST['password']) && isset($_POST['email'])){
+    if ($_SERVER['REQUEST_METHOD'] === 'POST'){
         $username   = $_POST['username'];
         $password   = $_POST['password'];
         $email      = $_POST['email'];
+        $password2 =$_POST['password2'];
 
         //Kiểm tra người dùng đã nhập liệu đầy đủ chưa
-    if (!$username || !$password || !$email )
+    if (!$username || !$password || !$email || !$password2)
     {
         echo "Vui lòng nhập đầy đủ thông tin. <a href='javascript: history.go(-1)'>Trở lại</a>";
-        exit;
+        exit();
     }
-
+    if ($password2 != $password)
+    {
+        echo "Mật khẩu không trùng khớp ! <a href='javascript: history.go(-1)'>Trở lại</a>";
+        exit();
+    }
     // Mã khóa mật khẩu
     $pass = password_hash($password,PASSWORD_DEFAULT);
 
@@ -107,14 +109,14 @@
     if (mysqli_num_rows($query1) > 0)
     {
         echo "Tên đăng nhập này đã có người dùng. Vui lòng chọn tên đăng nhập khác. <a href='javascript: history.go(-1)'>Trở lại</a>";
-        exit;
+        exit();
     }
 
     //Kiểm tra email có đúng định dạng hay không
     if (!preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+\.[A-Za-z]{2,6}$/", $email))
     {
         echo "Email này không hợp lệ. Vui long nhập email khác. <a href='javascript: history.go(-1)'>Trở lại</a>";
-        exit;
+        exit();
     }
 
     //Kiểm tra email đã có người dùng chưa
@@ -123,7 +125,7 @@
     if (mysqli_num_rows($query2) > 0)
     {
         echo "Email này đã có người dùng. Vui lòng chọn Email khác. <a href='javascript: history.go(-1)'>Trở lại</a>";
-        exit;
+        exit();
     }
 
         //Lưu thông tin thành viên vào bảng
@@ -143,7 +145,8 @@
                           
     //Thông báo quá trình lưu
     if ($addUser){
-        header('location:./login.php');
+      echo "<script>window.location.href='./login.php'</script>";
+      exit();
     }
         
     else{
