@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập</title>
     <link rel="stylesheet" href="./css/login.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    />
 </head>
 <body>
 <form class="form_container">
@@ -19,10 +23,13 @@
 
     <input placeholder="name@mail.com" title="Inpit title" type="text" class="input_field" id="email_field" name="email">
   </div>
-  <div class="input_container">
+  <div class="input_container group">
     <label class="input_label" for="password_field">Password</label>
-    
-    <input placeholder="Password" title="Inpit title" name="password" type="password" class="input_field" id="password_field"name="password">
+
+    <input placeholder="Password" title="Inpit title" name="password" type="password" class="input_field" id="password"name="password">
+    <i class="fa-regular fa-eye icon-pass"
+                    onclick="changeTypePassword()"
+                ></i>
   </div>
   <button title="Sign In" type="submit" class="sign-in_btn" name="button">
     <span>Đăng nhập</span>
@@ -63,53 +70,17 @@
   <a href="sign_up.php" class="note">Bạn chưa có tài khoản</a>
   <a href="index2.html" class="note">Quay về trang chủ</a>
 </form>
+
+
 </body>
+  <!-- ẩn hiện mật khẩu -->
+  <script>
+    function changeTypePassword() {
+      document.getElementById("password").type =
+        document.getElementById("password").type == "text"
+          ? "password"
+          : "text";
+    }
+  </script>
 </html>
 
-<?php
-
-session_start();
-//Khai báo utf-8 để hiển thị được tiếng việt
-header('Content-Type: text/html; charset=UTF-8');
-
-//Kết nối tới database
-include('connect.php');
-   
-    if(isset($_POST['username'])){
-        //Lấy dữ liệu nhập vào
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-
-        if (!$username || !$password )
-        {
-            echo "Vui lòng nhập đầy đủ thông tin. <a href='javascript: history.go(-1)'>Trở lại</a>";
-            exit;
-        }
-
-        $sql = "SELECT * FROM users WHERE username= '$username'";
-        $query = mysqli_query($mysqli,$sql);
-        $data = mysqli_fetch_assoc($query);
-        //Hàm mysqli_num_rows sẽ check mảng và trả về 2 giá trị 0 và 1
-        //Nếu trả về 1 là đúng còn 0 là sai
-        $checkUsername = mysqli_num_rows($query);
-        if($checkUsername == 1){
-            $checkPassword = password_verify($password,$data['password']);
-            if($checkPassword && $data['role'] == 1){
-                //Neu checkPass bang true luu vao session
-                $_SESSION['user'] = $data;
-                header('location:dashboard.php');
-            }
-            if($checkPassword && $data['role'] == 0){
-                $_SESSION['user'] = $data;
-                header('location:index.php');
-            }
-            else{
-                echo"Sai mật khẩu";
-            }
-        }
-        else{
-            echo"Tên đăng nhập không tồn tại";
-        }
-
-}
-?>
