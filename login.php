@@ -11,7 +11,7 @@
     />
 </head>
 <body>
-<form class="form_container">
+<form class="form_container" action="login.php" method="POST">
   <div class="logo_container"> <img src="./image/logoh2t.png"></div>
   <div class="title_container">
     <p class="title">Login to your Account</p>
@@ -19,9 +19,9 @@
   </div>
   <br>
   <div class="input_container">
-    <label class="input_label" for="email_field">Email</label>
+    <label class="input_label" for="email_field">Username</label>
 
-    <input placeholder="name@mail.com" title="Inpit title" type="text" class="input_field" id="email_field" name="email">
+    <input placeholder="Your username" title="Inpit title" type="text" class="input_field" id="email_field" name="username">
   </div>
   <div class="input_container group">
     <label class="input_label" for="password_field">Password</label>
@@ -31,7 +31,7 @@
                     onclick="changeTypePassword()"
                 ></i>
   </div>
-  <button title="Sign In" type="submit" class="sign-in_btn" name="button">
+  <button title="Sign In" type="submit" class="sign-in_btn" name="dangnhap">
     <span>Đăng nhập</span>
   </button>
 
@@ -83,4 +83,48 @@
     }
   </script>
 </html>
+<?php
+// session_start();
+//Kết nối tới database
+include('connect.php');
+   
+    if(isset($_POST['username'])){
+        //Lấy dữ liệu nhập vào
+        $username = $_POST['username'];
+        $password = $_POST['password'];
 
+        if (!$username || !$password )
+        {
+            echo "Vui lòng nhập đầy đủ thông tin. <a href='javascript: history.go(-1)'>Trở lại</a>";
+            exit;
+        }
+
+        $sql = "SELECT * FROM users WHERE username= '$username'";
+        $query = mysqli_query($mysqli,$sql);
+        $data = mysqli_fetch_assoc($query);
+        //Hàm mysqli_num_rows sẽ check mảng và trả về 2 giá trị 0 và 1
+        //Nếu trả về 1 là đúng còn 0 là sai
+        $checkUsername = mysqli_num_rows($query);
+        if($checkUsername == 1){
+            $checkPassword = password_verify($password,$data['password']);
+            if($checkPassword && $data['role'] == 1){
+                //Neu checkPass bang true luu vao session
+                $_SESSION['user'] = $data;
+                echo "<script>window.location.href='./dashboard.php'</script>";
+                exit();
+            }
+            if($checkPassword && $data['role'] == 0){
+                $_SESSION['user'] = $data;
+                echo "<script>window.location.href='./index2.html'</script>";
+                exit();
+            }
+            else{
+                echo"Sai mật khẩu";
+            }
+        }
+        else{
+            echo"Tên đăng nhập không tồn tại";
+        }
+
+}
+?>

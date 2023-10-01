@@ -120,7 +120,7 @@
     }
 
     //Kiểm tra email đã có người dùng chưa
-    $queryEmail = ("SELECT email FROM users WHERE email='$email'");
+    $queryEmail = ("SELECT gmail FROM users WHERE gmail='$email'");
     $query2 = mysqli_query($mysqli,$queryEmail);
     if (mysqli_num_rows($query2) > 0)
     {
@@ -133,7 +133,7 @@
         INSERT INTO users (
             username,
             password,
-            email
+            gmail
         )
         VALUE (
             '{$username}',
