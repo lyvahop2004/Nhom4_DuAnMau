@@ -1,3 +1,7 @@
+<?php
+session_start();
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +16,7 @@
 </head>
 <body>
 <form class="form_container" action="login.php" method="POST">
-  <div class="logo_container"> <img src="./image/logoh2t.png"></div>
+  <div class="logo_container"> <a href="index2.php"><img src="./image/logoh2t.png"></a></div>
   <div class="title_container">
     <p class="title">Login to your Account</p>
     <span class="subtitle">Get started with our app, just create an account and enjoy the experience.</span>
@@ -68,7 +72,7 @@
     <span>Sign In with Apple</span>
   </button>
   <a href="sign_up.php" class="note">Bạn chưa có tài khoản</a>
-  <a href="index2.html" class="note">Quay về trang chủ</a>
+  <a href="index2.php" class="note">Quay về trang chủ</a>
 </form>
 
 
@@ -84,7 +88,7 @@
   </script>
 </html>
 <?php
-// session_start();
+ob_start();
 //Kết nối tới database
 include('connect.php');
    
@@ -110,12 +114,12 @@ include('connect.php');
             if($checkPassword && $data['role'] == 1){
                 //Neu checkPass bang true luu vao session
                 $_SESSION['user'] = $data;
-                echo "<script>window.location.href='./dashboard.php'</script>";
+                echo "<script>window.location.href='./material-dashboard-master/material-dashboard-master/pages/users.php'</script>";
                 exit();
             }
             if($checkPassword && $data['role'] == 0){
                 $_SESSION['user'] = $data;
-                echo "<script>window.location.href='./index2.html'</script>";
+                echo "<script>window.location.href='./index2.php'</script>";
                 exit();
             }
             else{
